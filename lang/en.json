@@ -1,0 +1,9 @@
+{
+    "success.create": "Data is successfully created",
+    "success.delete": "Data is successfully deleted",
+    "success.login": "You have successfully logged in",
+    "success.logout": "You have successfully logged out",
+    "success.profile": "Your profile data is successfully updated",
+    "success.update": "Data is successfully updated",
+    "warning.login": "These credentials do not match our records"
+}
