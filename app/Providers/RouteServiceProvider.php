@@ -14,6 +14,7 @@ class RouteServiceProvider extends ServiceProvider
         $this->routes(function (): void {
             $this->routesAdmin();
             $this->routesApi();
+            $this->routeTechnicians();
         });
     }
 
@@ -28,5 +29,11 @@ class RouteServiceProvider extends ServiceProvider
         Route::middleware('api')
             ->prefix('api/v1')
             ->group(base_path('routes/api.php'));
+    }
+
+    private function routeTechnicians(): void
+    {
+        Route::middleware('web')
+            ->group(base_path('routes/technicians.php'));
     }
 }

@@ -1,6 +1,76 @@
 # Release Notes for 10.x
 
-## [Unreleased](https://github.com/laravel/framework/compare/v10.38.2...10.x)
+## [Unreleased](https://github.com/laravel/framework/compare/v10.41.0...10.x)
+
+## [v10.41.0](https://github.com/laravel/framework/compare/v10.40.0...v10.41.0) - 2024-01-16
+
+* [10.x] Add a `threshold` parameter to the `Number::spell` helper by [@caendesilva](https://github.com/caendesilva) in https://github.com/laravel/framework/pull/49610
+* Revert "[10.x] Make ComponentAttributeBag Arrayable" by [@luanfreitasdev](https://github.com/luanfreitasdev) in https://github.com/laravel/framework/pull/49623
+* [10.x] Fix return value and docblock by [@dwightwatson](https://github.com/dwightwatson) in https://github.com/laravel/framework/pull/49627
+* [10.x] Add an option to specify the default path to the models directory for `php artisan model:prune` by [@dbhynds](https://github.com/dbhynds) in https://github.com/laravel/framework/pull/49617
+* [10.x] Allow job chains to be conditionally dispatched by [@fjarrett](https://github.com/fjarrett) in https://github.com/laravel/framework/pull/49624
+* [10.x] Add test for existing empty test by [@lioneaglesolutions](https://github.com/lioneaglesolutions) in https://github.com/laravel/framework/pull/49632
+* [10.x] Add additional context to Mailable assertion messages by [@lioneaglesolutions](https://github.com/lioneaglesolutions) in https://github.com/laravel/framework/pull/49631
+* [10.x] Allow job batches to be conditionally dispatched by [@fjarrett](https://github.com/fjarrett) in https://github.com/laravel/framework/pull/49639
+* [10.x] Revert parameter name change by [@timacdonald](https://github.com/timacdonald) in https://github.com/laravel/framework/pull/49659
+* [10.x] Printing Name of The Method that Calls `ensureIntlExtensionIsInstalled` in `Number` class. by [@devajmeireles](https://github.com/devajmeireles) in https://github.com/laravel/framework/pull/49660
+* [10.x] Update pagination tailwind.blade.php by [@anasmorahhib](https://github.com/anasmorahhib) in https://github.com/laravel/framework/pull/49665
+* [10.x] feat: add base argument to Stringable->toInteger() by [@adamczykpiotr](https://github.com/adamczykpiotr) in https://github.com/laravel/framework/pull/49670
+* [10.x]: Remove unused class ShouldBeUnique when make a job by [@Kenini1805](https://github.com/Kenini1805) in https://github.com/laravel/framework/pull/49669
+* [10.x] Add tests for Eloquent methods by [@milwad-dev](https://github.com/milwad-dev) in https://github.com/laravel/framework/pull/49673
+* Implement draft workflow by [@driesvints](https://github.com/driesvints) in https://github.com/laravel/framework/pull/49683
+* [10.x] Fixing Types, Word and Returns of `Number`class. by [@devajmeireles](https://github.com/devajmeireles) in https://github.com/laravel/framework/pull/49681
+* [10.x] Test Improvements by [@crynobone](https://github.com/crynobone) in https://github.com/laravel/framework/pull/49679
+* [10.x] Officially support floats in trans_choice and Translator::choice by [@philbates35](https://github.com/philbates35) in https://github.com/laravel/framework/pull/49693
+* [10.x] Use static function by [@michaelnabil230](https://github.com/michaelnabil230) in https://github.com/laravel/framework/pull/49696
+* [10.x] Revert "[10.x] Improve numeric comparison for custom casts" by [@driesvints](https://github.com/driesvints) in https://github.com/laravel/framework/pull/49702
+* [10.x] Add exit code to queue:clear, and queue:forget commands by [@bytestream](https://github.com/bytestream) in https://github.com/laravel/framework/pull/49707
+* [10.x] Allow StreamInterface as raw HTTP Client body by [@janolivermr](https://github.com/janolivermr) in https://github.com/laravel/framework/pull/49705
+
+## [v10.40.0](https://github.com/laravel/framework/compare/v10.39.0...v10.40.0) - 2024-01-09
+
+* [10.x] `Model::preventAccessingMissingAttributes()` raises exception for enums & primitive castable attributes that were not retrieved by [@cosmastech](https://github.com/cosmastech) in https://github.com/laravel/framework/pull/49480
+* [10.x] Include system versioned tables for MariaDB by [@hafezdivandari](https://github.com/hafezdivandari) in https://github.com/laravel/framework/pull/49509
+* [10.x] Fixes the `Arr::dot()` method to properly handle indexes array by [@kayw-geek](https://github.com/kayw-geek) in https://github.com/laravel/framework/pull/49507
+* [10.x] Expand Gate::allows & Gate::denies signature by [@antonkomarev](https://github.com/antonkomarev) in https://github.com/laravel/framework/pull/49503
+* [10.x] Improve numeric comparison for custom casts by [@imahmood](https://github.com/imahmood) in https://github.com/laravel/framework/pull/49504
+* [10.x] Add session except method by [@xurshudyan](https://github.com/xurshudyan) in https://github.com/laravel/framework/pull/49520
+* [10.x] Add `Number::clamp` by [@jbrooksuk](https://github.com/jbrooksuk) in https://github.com/laravel/framework/pull/49512
+* [10.x] Fix Schedule test by [@michaelnabil230](https://github.com/michaelnabil230) in https://github.com/laravel/framework/pull/49538
+* [10.x] Use correct format of date by [@buismaarten](https://github.com/buismaarten) in https://github.com/laravel/framework/pull/49541
+* [10.x] Clean Arr by [@michaelnabil230](https://github.com/michaelnabil230) in https://github.com/laravel/framework/pull/49530
+* [10.x] Make ComponentAttributeBag Arrayable by [@iamgergo](https://github.com/iamgergo) in https://github.com/laravel/framework/pull/49524
+* [10.x] Fix whenAggregated when default is not specified by [@lovePizza](https://github.com/lovePizza) in https://github.com/laravel/framework/pull/49521
+* [10.x] Update AsArrayObject.php to use ARRAY_AS_PROPS flag by [@pintend](https://github.com/pintend) in https://github.com/laravel/framework/pull/49534
+* [10.x] Remove invalid `RedisCluster::client()` call by [@tillkruss](https://github.com/tillkruss) in https://github.com/laravel/framework/pull/49560
+* [10.x] Remove unused code from `PhpRedisConnector` by [@tillkruss](https://github.com/tillkruss) in https://github.com/laravel/framework/pull/49559
+* [10.x] Flush about command during test runs by [@timacdonald](https://github.com/timacdonald) in https://github.com/laravel/framework/pull/49557
+* [10.x] Fix parentOfParameter method by [@iamgergo](https://github.com/iamgergo) in https://github.com/laravel/framework/pull/49548
+* [10.x] Make the Schema Builder macroable by [@kevinb1989](https://github.com/kevinb1989) in https://github.com/laravel/framework/pull/49547
+* [10.x] Remove unused code from tests by [@imahmood](https://github.com/imahmood) in https://github.com/laravel/framework/pull/49566
+* [10.x] Update Query/Builder.php $columns typehint by [@Grldk](https://github.com/Grldk) in https://github.com/laravel/framework/pull/49563
+* [10.x] Add assertViewEmpty to TestView by [@dwightwatson](https://github.com/dwightwatson) in https://github.com/laravel/framework/pull/49558
+* [10.x] Update tailwind.blade.php for dark mode by [@sabinchacko03](https://github.com/sabinchacko03) in https://github.com/laravel/framework/pull/49515
+* [10.x] Fix deprecation with null value in cache FileStore by [@driesvints](https://github.com/driesvints) in https://github.com/laravel/framework/pull/49578
+* [10.x] Allow Vite asset path customization by [@timacdonald](https://github.com/timacdonald) in https://github.com/laravel/framework/pull/49437
+* [10.x] Type hinting of the second parameter of date- and time-related `where*()` methods of `Illuminate\Database\Query\Builder` by [@lorenzolosa](https://github.com/lorenzolosa) in https://github.com/laravel/framework/pull/49599
+* [10.x] Fix Stringable::convertCase() return type by [@vaites](https://github.com/vaites) in https://github.com/laravel/framework/pull/49590
+* Allow \Blade::stringable() to be called on native Iterables by [@tsjason](https://github.com/tsjason) in https://github.com/laravel/framework/pull/49591
+* [10.x] Refactor time handling using `InteractsWithTime` trait method by [@xurshudyan](https://github.com/xurshudyan) in https://github.com/laravel/framework/pull/49601
+* [10.x] Add `assertCount` test helper by [@xurshudyan](https://github.com/xurshudyan) in https://github.com/laravel/framework/pull/49609
+* [10.x] Ability to establish connection without using Config Repository by [@deleugpn](https://github.com/deleugpn) in https://github.com/laravel/framework/pull/49527
+* [10.x] Add APA style title helper by [@hotmeteor](https://github.com/hotmeteor) in https://github.com/laravel/framework/pull/49572
+* [10.x] Fix usage of alternatives in error output by [@Mrjavaci](https://github.com/Mrjavaci) in https://github.com/laravel/framework/pull/49614
+* [10.x] Use locks for queue job popping for PlanetScale's MySQL-compatible Vitess 19 engine by [@crynobone](https://github.com/crynobone) in https://github.com/laravel/framework/pull/49561
+
+## [v10.39.0](https://github.com/laravel/framework/compare/v10.38.2...v10.39.0) - 2023-12-27
+
+* [9.x] Support for phpredis 6.0.0 by [@MichalHubatka](https://github.com/MichalHubatka) in https://github.com/laravel/framework/pull/48380
+* [10.x] Dynamic `maxTries` for queued jobs by [@mechelon](https://github.com/mechelon) in https://github.com/laravel/framework/pull/49473
+* [10.x] Avoid TypeError when using json validation rule when PHP < 8.3 by [@Xint0](https://github.com/Xint0) in https://github.com/laravel/framework/pull/49474
+* [10.x] Fix use statement compilation in Blade templates by [@MrPunyapal](https://github.com/MrPunyapal) in https://github.com/laravel/framework/pull/49479
+* [10.x] Allow testing prompts validation by [@cerbero90](https://github.com/cerbero90) in https://github.com/laravel/framework/pull/49447
+* [10.x] Add 'Roundrobin' Symfony mailer transport driver by [@me-shaon](https://github.com/me-shaon) in https://github.com/laravel/framework/pull/49435
 
 ## [v10.38.2](https://github.com/laravel/framework/compare/v10.38.1...v10.38.2) - 2023-12-22
 

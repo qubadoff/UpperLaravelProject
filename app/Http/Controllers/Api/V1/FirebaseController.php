@@ -15,9 +15,7 @@ class FirebaseController extends Controller
     public function index(Request $request): JsonResponse
     {
         $request->validate([
-            'fmc_token' => 'required',
-            'device_type' => 'required',
-            'device_id' => 'required'
+            'fmc_token' => 'required'
         ]);
 
         DB::beginTransaction();

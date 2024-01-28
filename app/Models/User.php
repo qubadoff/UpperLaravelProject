@@ -22,6 +22,7 @@ class User extends Authenticatable
         'password',
         'type',
         'fmc_token',
+        'percent_count',
     ];
 
     protected function fullName(): Attribute

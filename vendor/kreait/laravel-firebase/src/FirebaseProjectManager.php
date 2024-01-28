@@ -25,7 +25,7 @@ class FirebaseProjectManager
         $this->app = $app;
     }
 
-    public function project(string $name = null): FirebaseProject
+    public function project(?string $name = null): FirebaseProject
     {
         $name = $name ?? $this->getDefaultProject();
 
@@ -82,6 +82,10 @@ class FirebaseProjectManager
 
         if ($authVariableOverride = $config['database']['auth_variable_override'] ?? null) {
             $factory = $factory->withDatabaseAuthVariableOverride($authVariableOverride);
+        }
+
+        if ($firestoreDatabase = $config['firestore']['database'] ?? null) {
+            $factory = $factory->withFirestoreDatabase($firestoreDatabase);
         }
 
         if ($defaultStorageBucket = $config['storage']['default_bucket'] ?? null) {

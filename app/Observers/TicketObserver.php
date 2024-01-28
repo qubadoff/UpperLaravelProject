@@ -13,10 +13,14 @@ class TicketObserver
      */
     public function created(Ticket $ticket): void
     {
-        $fmc_token = $ticket->user()->fmc_token;
+        if (is_null($ticket->ticket_number))
+        {
+            $user = $ticket->user;
 
-        $this->sendNotification($fmc_token);
+            $fmc_token = $user->fmc_token;
 
+            $this->sendNotification($fmc_token);
+        }
     }
 
     /**
@@ -24,10 +28,14 @@ class TicketObserver
      */
     public function updated(Ticket $ticket): void
     {
-        $fmc_token = $ticket->user()->fmc_token;
+        if (is_null($ticket->ticket_number))
+        {
+            $user = $ticket->user;
 
-        $this->sendNotification($fmc_token);
+            $fmc_token = $user->fmc_token;
 
+            $this->sendNotification($fmc_token);
+        }
     }
 
     /**
@@ -35,10 +43,14 @@ class TicketObserver
      */
     public function deleted(Ticket $ticket): void
     {
-        $fmc_token = $ticket->user()->fmc_token;
+        if (is_null($ticket->ticket_number))
+        {
+            $user = $ticket->user;
 
-        $this->sendNotification($fmc_token);
+            $fmc_token = $user->fmc_token;
 
+            $this->sendNotification($fmc_token);
+        }
     }
 
     /**
@@ -46,10 +58,14 @@ class TicketObserver
      */
     public function restored(Ticket $ticket): void
     {
-        $fmc_token = $ticket->user()->fmc_token;
+        if (is_null($ticket->ticket_number))
+        {
+            $user = $ticket->user;
 
-        $this->sendNotification($fmc_token);
+            $fmc_token = $user->fmc_token;
 
+            $this->sendNotification($fmc_token);
+        }
     }
 
     /**
@@ -57,9 +73,13 @@ class TicketObserver
      */
     public function forceDeleted(Ticket $ticket): void
     {
-        $fmc_token = $ticket->user()->fmc_token;
+        if (is_null($ticket->ticket_number))
+        {
+            $user = $ticket->user;
 
-        $this->sendNotification($fmc_token);
+            $fmc_token = $user->fmc_token;
 
+            $this->sendNotification($fmc_token);
+        }
     }
 }

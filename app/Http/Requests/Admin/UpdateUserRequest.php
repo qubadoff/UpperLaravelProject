@@ -50,6 +50,9 @@ class UpdateUserRequest extends FormRequest
                 'boolean',
                 Rule::in([0, 1]),
             ],
+            'percent_count' => [
+                'required'
+            ]
         ];
     }
 }

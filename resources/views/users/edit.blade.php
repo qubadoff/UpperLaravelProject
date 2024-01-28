@@ -146,6 +146,25 @@
                                     </div>
                                 </div>
                             </div>
+                            <div class="form-group row">
+                                <label class="col-form-label text-right col-lg-3 col-sm-12">
+                                    Percent count <span class="text-danger">*</span>
+                                </label>
+                                <div class="col-lg-6 col-md-9 col-sm-12">
+                                    <div class="input-group">
+                                        <input
+                                            type="text"
+                                            class="form-control @error('percent_count') is-invalid @enderror"
+                                            name="percent_count"
+                                            value="{{ old('percent_count') }}"
+                                            placeholder="Enter the percent type"
+                                        >
+                                        @error('name')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                         <div class="card-footer">
                             <div class="row">

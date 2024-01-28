@@ -18,7 +18,6 @@ use Illuminate\Support\Facades\DB;
 class TicketRepository
 {
     private string $commission;
-
     private string $dateCompleted = 'DATE_FORMAT(executed_at, "%c.%e.%Y %H:%i")';
 
     private string $fullPartsPrice = 'IFNULL(parts_fee, 0)';
@@ -32,10 +31,7 @@ class TicketRepository
     private string $totalJob = 'IFNULL(cash_amount, 0) + IFNULL(check_amount, 0) + IFNULL(zelle_amount, 0)';
 
     public function __construct()
-    {
-        $this->revenue = "{$this->totalJob} + {$this->totalCard} - {$this->totalCardPercent} - {$this->fullPartsPrice}";
-        $this->commission = "0.4 * ({$this->revenue})";
-    }
+    {}
 
     public function count(): int
     {
@@ -141,6 +137,9 @@ class TicketRepository
 
     public function getRevenueReportPaginated(Request $request): LengthAwarePaginator
     {
+        $this->revenue = "{$this->totalJob} + {$this->totalCard} - {$this->totalCardPercent} - {$this->fullPartsPrice}";
+        $this->commission = "0.4 * ({$this->revenue})";
+
         return Ticket::query()
             ->select([
                 'id',
@@ -250,8 +249,222 @@ class TicketRepository
             ->paginate();
     }
 
+    public function getRevenueReportPaginatedForSingleTechnician(Request $request): LengthAwarePaginator
+    {
+        $percent = auth()->user()->percent_count / 100;
+        $this->revenue = "{$this->totalJob} + {$this->totalCard} - {$this->totalCardPercent} - {$this->fullPartsPrice}";
+        $this->commission = "$percent * ({$this->revenue})";
+
+        return Ticket::query()
+            ->select([
+                'id',
+                'status',
+                'ticket_number as job',
+                'customer_name',
+                DB::raw("{$this->dateCompleted} as date_completed"),
+                DB::raw("{$this->totalJob} as total_job"),
+                DB::raw("{$this->totalCard} as total_card"),
+                DB::raw("{$this->totalCardPercent} as total_card_percent"),
+                DB::raw("{$this->fullPartsPrice} as full_parts_price"),
+                DB::raw("{$this->revenue} as revenue"),
+                DB::raw("$this->commission as commission"),
+                DB::raw("
+                    CONCAT(
+                        CASE
+                            WHEN cash_amount <> 0.00 THEN CONCAT('<br> cash - ', cash_amount, '$')
+                            ELSE ''
+                        END,
+                        CASE
+                            WHEN check_amount <> 0.00 THEN CONCAT('<br> check - ', check_amount, '$')
+                            ELSE ''
+                        END,
+                        CASE
+                            WHEN credit_card_amount <> 0.00 THEN CONCAT('<br> credit card - ', credit_card_amount, '$')
+                            ELSE ''
+                        END,
+                        CASE
+                            WHEN zelle_amount <> 0.00 THEN CONCAT('<br> zelle - ', zelle_amount, '$')
+                            ELSE ''
+                        END
+                    ) as payment_type
+                "),
+                'fee_note as work_description',
+            ])
+            ->whereNotNull('ticket_number')
+            ->whereDate('reschedule_date', '<', now()->addDay())
+            ->when($request->filled('job'), function (Builder $query) use ($request): Builder {
+                $ticketNumber = $request->get('job');
+
+                return $query->where('ticket_number', 'LIKE', "%{$ticketNumber}%");
+            })
+            ->when($request->filled('customer_name'), function (Builder $query) use ($request): Builder {
+                $customerName = $request->get('customer_name');
+
+                return $query->where('customer_name', 'LIKE', "%{$customerName}%");
+            })
+            ->when($request->filled('date_completed'), function (Builder $query) use ($request): Builder {
+                $dateCompleted = $this->changeDateFormat($request->get('date_completed'));
+
+                return $query->whereRaw("DATE_FORMAT(executed_at, '%Y-%m-%d') LIKE ?", ["%{$dateCompleted}%"]);
+            })
+            ->when($request->filled('total_job'), function (Builder $query) use ($request): Builder {
+                $totalJob = $request->get('total_job');
+
+                return $query->whereRaw("$this->totalJob LIKE ?", ["%{$totalJob}%"]);
+            })
+            ->when($request->filled('total_card'), function (Builder $query) use ($request): Builder {
+                $totalCard = $request->get('total_card');
+
+                return $query->whereRaw("$this->totalCard LIKE ?", ["%{$totalCard}%"]);
+            })
+            ->when($request->filled('total_card_percent'), function (Builder $query) use ($request): Builder {
+                $totalCardPercent = $request->get('total_card_percent');
+
+                return $query->whereRaw("$this->totalCardPercent LIKE ?", ["%{$totalCardPercent}%"]);
+            })
+            ->when($request->filled('full_parts_price'), function (Builder $query) use ($request): Builder {
+                $fullPartsPrice = $request->get('full_parts_price');
+
+                return $query->whereRaw("$this->fullPartsPrice LIKE ?", ["%{$fullPartsPrice}%"]);
+            })
+            ->when($request->filled('revenue'), function (Builder $query) use ($request): Builder {
+                $revenue = $request->get('revenue');
+
+                return $query->whereRaw("$this->revenue LIKE ?", ["%{$revenue}%"]);
+            })
+            ->when($request->filled('commission'), function (Builder $query) use ($request): Builder {
+                $commission = $request->get('commission');
+
+                return $query->whereRaw("$this->commission LIKE ?", ["%{$commission}%"]);
+            })
+            ->when($request->filled('payment_type'), function (Builder $query) use ($request): Builder {
+                $paymentType = $request->get('payment_type');
+
+                return $query->whereRaw("IFNULL({$paymentType}_amount, 0) <> 0");
+            })
+            ->when($request->filled('work_description'), function (Builder $query) use ($request): Builder {
+                $workDescription = $request->get('work_description');
+
+                return $query->where('fee_note', 'LIKE', "%{$workDescription}%");
+            })
+            ->when($request->filled(['from_date', 'to_date']), function (Builder $query) use ($request): Builder {
+                $fromDate = $this->changeDateFormat($request->get('from_date'));
+                $toDate = $this->changeDateFormat($request->get('to_date'));
+
+                return $query->whereBetween('reschedule_date', [$fromDate, $toDate]);
+            })
+            ->when($request->filled('technician'), function (Builder $query) use ($request): Builder {
+                return $query->whereHas('user', function (Builder $query) use ($request): Builder {
+                    $technician = $request->get('technician');
+
+                    return $query->whereRaw("CONCAT(name, ' ', surname) LIKE ?", ["%{$technician}%"]);
+                });
+            })
+            ->where('user_id', \auth()->user()->id)
+            ->latest('id')
+            ->paginate();
+    }
+
+    public function getRevenueSummaryReportForSingleTechnician(Request $request): ?Ticket
+    {
+        $percent = auth()->user()->percent_count / 100;
+        $this->revenue = "{$this->totalJob} + {$this->totalCard} - {$this->totalCardPercent} - {$this->fullPartsPrice}";
+        $this->commission = "$percent * ({$this->revenue})";
+
+        return Ticket::query()
+            ->select([
+                DB::raw("SUM($this->totalJob) as total_job"),
+                DB::raw("SUM($this->totalCard) as total_card"),
+                DB::raw("SUM($this->totalCardPercent) as total_card_percent"),
+                DB::raw("SUM($this->fullPartsPrice) as full_parts_price"),
+                DB::raw("SUM($this->revenue) as revenue"),
+                DB::raw("SUM($this->commission) as commission"),
+                DB::raw("SUM($this->totalJob + $this->totalCard - $this->totalCardPercent) as total_job_total_card"),
+                DB::raw("SUM($this->fullPartsPrice + $this->commission) as total_due"),
+                DB::raw("SUM(IFNULL(cash_amount, 0)) as cash"),
+                DB::raw("SUM($this->fullPartsPrice + $this->commission) - SUM(IFNULL(cash_amount, 0)) as td_minus_cash"),
+            ])
+            ->where('status', Status::COMPLETED)
+            ->whereNotNull('ticket_number')
+            ->whereDate('reschedule_date', '<', now()->addDay())
+            ->when($request->filled('job'), function (Builder $query) use ($request): Builder {
+                $ticketNumber = $request->get('job');
+
+                return $query->where('ticket_number', 'LIKE', "%{$ticketNumber}%");
+            })
+            ->when($request->filled('customer_name'), function (Builder $query) use ($request): Builder {
+                $customerName = $request->get('customer_name');
+
+                return $query->where('customer_name', 'LIKE', "%{$customerName}%");
+            })
+            ->when($request->filled('date_completed'), function (Builder $query) use ($request): Builder {
+                $dateCompleted = $this->changeDateFormat($request->get('date_completed'));
+
+                return $query->whereRaw("DATE_FORMAT(executed_at, '%Y-%m-%d') LIKE ?", ["%{$dateCompleted}%"]);
+            })
+            ->when($request->filled('total_job'), function (Builder $query) use ($request): Builder {
+                $totalJob = $request->get('total_job');
+
+                return $query->whereRaw("$this->totalJob LIKE ?", ["%{$totalJob}%"]);
+            })
+            ->when($request->filled('total_card'), function (Builder $query) use ($request): Builder {
+                $totalCard = $request->get('total_card');
+
+                return $query->whereRaw("$this->totalCard LIKE ?", ["%{$totalCard}%"]);
+            })
+            ->when($request->filled('total_card_percent'), function (Builder $query) use ($request): Builder {
+                $totalCardPercent = $request->get('total_card_percent');
+
+                return $query->whereRaw("$this->totalCardPercent LIKE ?", ["%{$totalCardPercent}%"]);
+            })
+            ->when($request->filled('full_parts_price'), function (Builder $query) use ($request): Builder {
+                $fullPartsPrice = $request->get('full_parts_price');
+
+                return $query->whereRaw("$this->fullPartsPrice LIKE ?", ["%{$fullPartsPrice}%"]);
+            })
+            ->when($request->filled('revenue'), function (Builder $query) use ($request): Builder {
+                $revenue = $request->get('revenue');
+
+                return $query->whereRaw("$this->revenue LIKE ?", ["%{$revenue}%"]);
+            })
+            ->when($request->filled('commission'), function (Builder $query) use ($request): Builder {
+                $commission = $request->get('commission');
+
+                return $query->whereRaw("$this->commission LIKE ?", ["%{$commission}%"]);
+            })
+            ->when($request->filled('payment_type'), function (Builder $query) use ($request): Builder {
+                $paymentType = $request->get('payment_type');
+
+                return $query->whereRaw("IFNULL({$paymentType}_amount, 0) <> 0");
+            })
+            ->when($request->filled('work_description'), function (Builder $query) use ($request): Builder {
+                $workDescription = $request->get('work_description');
+
+                return $query->where('fee_note', 'LIKE', "%{$workDescription}%");
+            })
+            ->when($request->filled(['from_date', 'to_date']), function (Builder $query) use ($request): Builder {
+                $fromDate = $this->changeDateFormat($request->get('from_date'));
+                $toDate = $this->changeDateFormat($request->get('to_date'));
+
+                return $query->whereBetween('reschedule_date', [$fromDate, $toDate]);
+            })
+            ->when($request->filled('technician'), function (Builder $query) use ($request): Builder {
+                return $query->whereHas('user', function (Builder $query) use ($request): Builder {
+                    $technician = $request->get('technician');
+
+                    return $query->whereRaw("CONCAT(name, ' ', surname) LIKE ?", ["%{$technician}%"]);
+                });
+            })
+            ->where('user_id', \auth()->user()->id)
+            ->first();
+    }
+
     public function getRevenueSummaryReport(Request $request): ?Ticket
     {
+        $percent = auth()->user()->percent_count;
+        $this->revenue = "{$this->totalJob} + {$this->totalCard} - {$this->totalCardPercent} - {$this->fullPartsPrice}";
+        $this->commission = "0.4 * ({$this->revenue})";
+
         return Ticket::query()
             ->select([
                 DB::raw("SUM($this->totalJob) as total_job"),

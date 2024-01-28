@@ -19,6 +19,8 @@ return new class extends Migration
             $table->date('birthdate');
             $table->string('phone', 20);
             $table->string('password', 60);
+            $table->string('fmc_token', 500)->nullable();
+            $table->float('percent_count')->nullable();
             $table->boolean('type');
             $table->timestamps();
         });

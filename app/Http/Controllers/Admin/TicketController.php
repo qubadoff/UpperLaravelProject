@@ -27,8 +27,7 @@ class TicketController extends Controller
         private readonly FeeRepository $feeRepository,
         private readonly TicketRepository $ticketRepository,
         private readonly UserRepository $userRepository,
-    ) {
-    }
+    ) {}
 
     public function index(Request $request): View
     {
